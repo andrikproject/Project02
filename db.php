@@ -442,6 +442,141 @@ function seed_data(PDO $pdo): void
             code_block('bash', "whisper rekaman.mp3 --model small --language Indonesian")
             . '<div class="tip">Pilihan model: tiny, base, small, medium, large. Makin besar = makin akurat tapi lebih berat.</div>'],
     ]);
+
+    // ── 19. AI: Stable Diffusion WebUI (Automatic1111) ──
+    insert_tutorial($pdo, [
+        'title' => 'Stable Diffusion WebUI (Automatic1111)',
+        'slug' => 'stable-diffusion-webui-automatic1111',
+        'description' => 'GUI paling populer untuk generasi gambar Stable Diffusion, dengan ekosistem extension terbesar.',
+        'category' => 'AI', 'icon' => 'FIRE',
+        'tags' => 'Stable Diffusion,Image,GPU,WebUI',
+    ], [
+        ['Prasyarat',
+            '<div class="info-box"><div class="info-grid">'
+            . '<div><div class="label">GPU</div><div class="value">NVIDIA 4GB+ (8GB disarankan)</div></div>'
+            . '<div><div class="label">Python</div><div class="value">3.10</div></div>'
+            . '<div><div class="label">Disk</div><div class="value">10-30 GB</div></div>'
+            . '<div><div class="label">Lain</div><div class="value">Git</div></div>'
+            . '</div></div>'],
+        ['Clone Repository',
+            code_block('bash', "git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui\ncd stable-diffusion-webui")],
+        ['Jalankan',
+            '<p>Linux/macOS:</p>'
+            . code_block('bash', "./webui.sh")
+            . '<p>Windows: jalankan <code>webui-user.bat</code>. Skrip akan otomatis menyiapkan environment & dependency.</p>'
+            . code_block('text', "http://localhost:7860")
+            . '<div class="tip">Letakkan model checkpoint di <code>models/Stable-diffusion/</code>.</div>'],
+    ]);
+
+    // ── 20. AI: LocalAI ──
+    insert_tutorial($pdo, [
+        'title' => 'LocalAI — API OpenAI-Compatible Lokal',
+        'slug' => 'localai-openai-compatible',
+        'description' => 'Pengganti drop-in OpenAI API yang berjalan di hardware sendiri (CPU/GPU), mendukung teks, gambar, dan audio.',
+        'category' => 'AI', 'icon' => 'SERVER',
+        'tags' => 'API,Self-hosted,OpenAI,Docker',
+    ], [
+        ['Jalankan dengan Docker (CPU)',
+            code_block('bash', "docker run -d --name localai \\\n  -p 8080:8080 \\\n  localai/localai:latest-aio-cpu")
+            . '<div class="tip">Versi "aio" sudah berisi paket model siap pakai.</div>'],
+        ['Uji Endpoint',
+            '<p>Kompatibel penuh dengan format OpenAI:</p>'
+            . code_block('bash', "curl http://localhost:8080/v1/chat/completions \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"gpt-4\",\n    \"messages\": [{\"role\":\"user\",\"content\":\"Halo!\"}]\n  }'")
+            . '<div class="warning">Untuk performa lebih tinggi gunakan image GPU (NVIDIA/AMD) yang sesuai.</div>'],
+    ]);
+
+    // ── 21. AI: Dify ──
+    insert_tutorial($pdo, [
+        'title' => 'Dify — Platform Aplikasi LLM Self-Hosted',
+        'slug' => 'dify-platform-llm',
+        'description' => 'Builder visual untuk workflow AI, RAG bawaan, manajemen prompt, dan generasi API — di balik UI web bersih.',
+        'category' => 'AI', 'icon' => 'CLOUD',
+        'tags' => 'RAG,Workflow,Self-hosted,Docker Compose',
+    ], [
+        ['Prasyarat',
+            '<div class="warning">Alokasikan minimal 2 vCPU dan 8 GB RAM untuk Docker, jika tidak instalasi bisa gagal.</div>'],
+        ['Deploy dengan Docker Compose',
+            code_block('bash', "git clone https://github.com/langgenius/dify.git\ncd dify/docker\ncp .env.example .env\ndocker compose up -d")],
+        ['Akses & Setup',
+            '<p>Buka di browser lalu buat akun admin awal:</p>'
+            . code_block('text', "http://localhost")
+            . '<p>Setelah masuk, konfigurasikan model system (OpenAI/Ollama/dll), lalu mulai membangun aplikasi AI.</p>'],
+    ]);
+
+    // ── 22. AI: Open Interpreter ──
+    insert_tutorial($pdo, [
+        'title' => 'Open Interpreter — Jalankan Kode via Chat',
+        'slug' => 'open-interpreter-jalankan-kode',
+        'description' => 'Biarkan LLM menjalankan kode (Python, JavaScript, Shell) di komputer Anda lewat antarmuka chat di terminal.',
+        'category' => 'AI', 'icon' => 'CODE',
+        'tags' => 'Agent,Python,CLI,Otomasi',
+    ], [
+        ['Install',
+            '<p>Disarankan dalam virtual environment. Butuh Python 3.10 / 3.11.</p>'
+            . code_block('bash', "pip install open-interpreter")],
+        ['Jalankan',
+            code_block('bash', "interpreter")
+            . '<p>Ngobrol seperti ChatGPT, tetapi ia bisa benar-benar mengeksekusi kode di mesin Anda.</p>'
+            . '<div class="warning">Selalu tinjau kode sebelum dijalankan — ia memiliki akses ke sistem Anda.</div>'],
+        ['Pakai Model Lokal',
+            code_block('bash', "interpreter --local")
+            . '<div class="tip">Mode lokal dapat dihubungkan ke Ollama untuk privasi penuh.</div>'],
+    ]);
+
+    // ── 23. AI: vLLM ──
+    insert_tutorial($pdo, [
+        'title' => 'vLLM — Serving LLM Throughput Tinggi',
+        'slug' => 'vllm-serving-llm',
+        'description' => 'Engine inferensi berkinerja tinggi (PagedAttention) untuk melayani LLM open-weight dalam skala produksi.',
+        'category' => 'AI', 'icon' => 'ROCKET',
+        'tags' => 'Inference,GPU,Production,OpenAI API',
+    ], [
+        ['Prasyarat',
+            '<div class="info-box"><div class="info-grid">'
+            . '<div><div class="label">GPU</div><div class="value">NVIDIA + CUDA 12.1</div></div>'
+            . '<div><div class="label">Python</div><div class="value">3.10+</div></div>'
+            . '<div><div class="label">Throughput</div><div class="value">5-20x Ollama</div></div>'
+            . '<div><div class="label">API</div><div class="value">OpenAI-compatible</div></div>'
+            . '</div></div>'],
+        ['Install',
+            code_block('bash', "pip install vllm")],
+        ['Serve Model (OpenAI-compatible)',
+            code_block('bash', "vllm serve meta-llama/Llama-3.1-8B-Instruct")
+            . '<p>Server berjalan di port 8000 dengan format OpenAI. Uji:</p>'
+            . code_block('bash', "curl http://localhost:8000/v1/chat/completions \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"meta-llama/Llama-3.1-8B-Instruct\",\n    \"messages\": [{\"role\":\"user\",\"content\":\"Halo!\"}]\n  }'")],
+    ]);
+
+    // ── 24. AI: Jan ──
+    insert_tutorial($pdo, [
+        'title' => 'Jan — Aplikasi AI Offline Privasi-First',
+        'slug' => 'jan-ai-offline',
+        'description' => 'Aplikasi desktop open-source untuk menjalankan LLM 100% offline, alternatif ChatGPT yang privat.',
+        'category' => 'AI', 'icon' => 'LOCK',
+        'tags' => 'Desktop,Offline,Privacy,GUI',
+    ], [
+        ['Unduh & Pasang',
+            '<p>Jan tersedia untuk Windows, macOS, dan Linux. Unduh installer dari situs resmi:</p>'
+            . code_block('text', "https://jan.ai")
+            . '<div class="tip">Tidak perlu terminal — cukup pasang seperti aplikasi biasa.</div>'],
+        ['Mulai Pakai',
+            '<p>Buka Jan, unduh model dari Hub bawaan (mis. Llama, Mistral), lalu mulai chat sepenuhnya offline. Jan juga menyediakan API lokal kompatibel-OpenAI untuk aplikasi Anda.</p>'],
+    ]);
+
+    // ── 25. AI: LM Studio ──
+    insert_tutorial($pdo, [
+        'title' => 'LM Studio — GUI Mudah untuk LLM Lokal',
+        'slug' => 'lm-studio-gui-llm',
+        'description' => 'Jalankan LLM lokal tanpa perintah terminal: cari, unduh, dan chat dengan UI yang rapi + API lokal.',
+        'category' => 'AI', 'icon' => 'BOOK',
+        'tags' => 'Desktop,GUI,Offline,No-CLI',
+    ], [
+        ['Unduh Aplikasi',
+            '<p>Tersedia untuk Windows, macOS (Apple Silicon), dan Linux:</p>'
+            . code_block('text', "https://lmstudio.ai")],
+        ['Pilih & Jalankan Model',
+            '<p>Cari model di tab Discover, klik unduh, lalu klik Run. Anda langsung bisa chat dengan UI yang polished — tanpa satu pun perintah terminal.</p>'
+            . '<div class="tip">LM Studio juga bisa menjadi server API lokal (OpenAI-compatible) untuk dipakai aplikasi lain.</div>'],
+    ]);
 }
 
 /** Helper untuk membuat markup blok kode (dipakai saat seed). */
