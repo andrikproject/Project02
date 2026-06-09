@@ -1,0 +1,8 @@
+# Database SQLite (dibuat otomatis saat aplikasi pertama dijalankan)
+/data/
+*.db
+*.sqlite
+
+# OS / editor
+.DS_Store
+Thumbs.db
