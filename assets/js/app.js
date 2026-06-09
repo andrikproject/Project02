@@ -117,3 +117,129 @@ function insertSnippet(btn, type) {
     });
   });
 })();
+
+
+// ════════════════════════════════════════════
+// Dark code syntax highlighting (ringan, tanpa library)
+// ════════════════════════════════════════════
+(function () {
+  function esc(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  var STRING = "\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*'|`(?:[^`\\\\]|\\\\.)*`";
+  var NUMBER = "\\b\\d+(?:\\.\\d+)?\\b";
+
+  function rulesFor(lang) {
+    switch (lang) {
+      case 'python':
+        return [
+          { re: '#[^\\n]*', cls: 'comment' },
+          { re: STRING, cls: 'string' },
+          { re: '\\b(?:import|from|as|def|return|class|if|elif|else|for|while|in|not|and|or|is|None|True|False|with|try|except|finally|print|lambda|yield|await|async|pass|break|continue)\\b', cls: 'keyword' },
+          { re: NUMBER, cls: 'number' }
+        ];
+      case 'javascript': case 'js': case 'node':
+        return [
+          { re: '\\/\\/[^\\n]*', cls: 'comment' },
+          { re: STRING, cls: 'string' },
+          { re: '\\b(?:const|let|var|function|return|if|else|for|while|require|module|exports|async|await|new|class|extends|import|from|export|true|false|null|undefined|console|await)\\b', cls: 'keyword' },
+          { re: NUMBER, cls: 'number' }
+        ];
+      case 'sql':
+        return [
+          { re: '--[^\\n]*', cls: 'comment' },
+          { re: STRING, cls: 'string' },
+          { re: '\\b(?:CREATE|DATABASE|USER|IDENTIFIED|BY|GRANT|ALL|PRIVILEGES|ON|TO|FLUSH|SELECT|INSERT|INTO|UPDATE|DELETE|FROM|WHERE|VALUES|TABLE|PRIMARY|KEY|NOT|NULL|DEFAULT)\\b', cls: 'keyword' },
+          { re: NUMBER, cls: 'number' }
+        ];
+      case 'yaml': case 'yml': case 'nginx': case 'hcl': case 'text':
+        return [
+          { re: '#[^\\n]*', cls: 'comment' },
+          { re: STRING, cls: 'string' },
+          { re: NUMBER, cls: 'number' }
+        ];
+      default: // bash & lainnya
+        return [
+          { re: '#[^\\n]*', cls: 'comment' },
+          { re: STRING, cls: 'string' },
+          { re: '\\$\\{[^}]*\\}|\\$[A-Za-z_]\\w*', cls: 'var' },
+          { re: '(?<=\\s)-{1,2}[A-Za-z][\\w-]*', cls: 'flag' },
+          { re: '\\b(?:sudo|apt|apt-get|curl|wget|git|docker|npm|npx|pnpm|yarn|pip|pip3|python|python3|node|ssh|ssh-keygen|systemctl|service|cd|mkdir|rm|cp|mv|nano|vim|echo|export|source|bash|sh|chmod|chown|tar|unzip|crontab|ufw|ollama|pm2|ffmpeg|yt-dlp|caddy|nginx|mysql|mariadb|psql|redis-cli|mongosh|interpreter|vllm|whisper|flowise|cloudflared|kubectl|k3s|terraform|wg|install|enable|start|run|reload|status|up|down)\\b', cls: 'cmd' },
+          { re: NUMBER, cls: 'number' }
+        ];
+    }
+  }
+
+  function highlight(text, lang) {
+    var rules = rulesFor(lang);
+    var combined;
+    try {
+      combined = new RegExp(rules.map(function (r) { return '(' + r.re + ')'; }).join('|'), 'g');
+    } catch (e) {
+      return esc(text); // lookbehind tak didukung -> fallback polos
+    }
+    var out = '', last = 0, m;
+    while ((m = combined.exec(text)) !== null) {
+      if (m.index > last) out += esc(text.slice(last, m.index));
+      var gi = 1;
+      for (; gi <= rules.length; gi++) { if (m[gi] !== undefined) break; }
+      out += '<span class="tok-' + rules[gi - 1].cls + '">' + esc(m[0]) + '</span>';
+      last = m.index + m[0].length;
+      if (m[0].length === 0) combined.lastIndex++;
+    }
+    out += esc(text.slice(last));
+    return out;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.code-block').forEach(function (block) {
+      var pre = block.querySelector('pre');
+      var langEl = block.querySelector('.code-header .lang');
+      if (!pre) return;
+      var lang = (langEl ? langEl.textContent : '').trim().toLowerCase();
+      pre.innerHTML = highlight(pre.textContent, lang);
+    });
+  });
+})();
+
+// ════════════════════════════════════════════
+// Toast sederhana
+// ════════════════════════════════════════════
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.className = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2200);
+}
+
+// ════════════════════════════════════════════
+// Share tutorial (Web Share API + fallback salin link)
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('share-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var data = {
+      title: btn.getAttribute('data-title') || document.title,
+      text: btn.getAttribute('data-text') || '',
+      url: window.location.href
+    };
+    if (navigator.share) {
+      navigator.share(data).catch(function () {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(data.url).then(function () {
+        showToast('Link tutorial disalin!');
+      }).catch(function () { showToast(data.url); });
+    } else {
+      showToast(data.url);
+    }
+  });
+});

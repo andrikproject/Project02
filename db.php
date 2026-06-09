@@ -823,6 +823,145 @@ function seed_data(PDO $pdo): void
             code_block('bash', "# menit jam tgl bln hari-pekan  perintah\n0 2 * * *   /home/user/backup.sh        # tiap hari pukul 02:00\n*/15 * * * * curl -s https://situs/ping  # tiap 15 menit\n0 0 * * 0   docker system prune -f       # tiap Minggu tengah malam")
             . '<div class="tip">Gunakan <code>crontab -l</code> untuk melihat daftar jadwal aktif.</div>'],
     ]);
+
+    // ── 41. VPS: k3s (Kubernetes ringan) ──
+    insert_tutorial($pdo, [
+        'title' => 'Kubernetes Ringan dengan k3s',
+        'slug' => 'kubernetes-ringan-k3s',
+        'description' => 'Distribusi Kubernetes bersertifikat penuh dalam satu binary ~70MB, jalan di VPS 1GB. Cocok untuk belajar & edge.',
+        'category' => 'VPS', 'icon' => 'SERVER',
+        'tags' => 'Kubernetes,k3s,Container,Orkestrasi',
+    ], [
+        ['Install Single-Node',
+            '<p>Satu perintah membuat cluster Kubernetes fungsional (control-plane + kubelet + runtime):</p>'
+            . code_block('bash', "curl -sfL https://get.k3s.io | sh -")
+            . '<div class="tip">Traefik sudah terpasang sebagai ingress controller secara default.</div>'],
+        ['Cek Cluster',
+            code_block('bash', "sudo k3s kubectl get nodes\nsudo k3s kubectl get pods -A")],
+        ['Tambah Worker Node',
+            '<p>Ambil token dari server, lalu di node lain:</p>'
+            . code_block('bash', "# di server:\nsudo cat /var/lib/rancher/k3s/server/node-token\n\n# di agent:\ncurl -sfL https://get.k3s.io | K3S_URL=https://IP_SERVER:6443 K3S_TOKEN=TOKEN sh -")],
+    ]);
+
+    // ── 42. Git: CI/CD dengan GitHub Actions ──
+    insert_tutorial($pdo, [
+        'title' => 'CI/CD Otomatis dengan GitHub Actions',
+        'slug' => 'cicd-github-actions',
+        'description' => 'Jalankan test & deploy otomatis setiap push. Pipeline langsung di repo GitHub Anda, gratis.',
+        'category' => 'Git', 'icon' => 'GEAR',
+        'tags' => 'CI/CD,GitHub Actions,Otomasi,DevOps',
+    ], [
+        ['Buat File Workflow',
+            '<p>Buat file <code>.github/workflows/ci.yml</code> di repo Anda:</p>'
+            . code_block('yaml', "name: CI\non:\n  push:\n    branches: [ main ]\n  pull_request:\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - run: npm ci\n      - run: npm test")],
+        ['Push & Lihat Hasil',
+            '<p>Commit dan push — Actions otomatis berjalan. Lihat tab <strong>Actions</strong> di repo untuk log.</p>'
+            . '<div class="tip">Simpan rahasia (token, API key) di Settings &rarr; Secrets and variables &rarr; Actions, akses via <code>${{ secrets.NAMA }}</code>.</div>'],
+    ]);
+
+    // ── 43. VPS: Grafana + Prometheus ──
+    insert_tutorial($pdo, [
+        'title' => 'Monitoring Pro: Grafana + Prometheus',
+        'slug' => 'grafana-prometheus-monitoring',
+        'description' => 'Stack monitoring standar industri: Prometheus mengumpulkan metrik, Grafana memvisualisasikannya dalam dashboard cantik.',
+        'category' => 'VPS', 'icon' => 'GEAR',
+        'tags' => 'Monitoring,Grafana,Prometheus,Metrics',
+    ], [
+        ['docker-compose.yml',
+            code_block('yaml', "services:\n  prometheus:\n    image: prom/prometheus\n    ports: [\"9090:9090\"]\n    volumes:\n      - ./prometheus.yml:/etc/prometheus/prometheus.yml\n  grafana:\n    image: grafana/grafana\n    ports: [\"3000:3000\"]\n    depends_on: [prometheus]")],
+        ['prometheus.yml',
+            code_block('yaml', "global:\n  scrape_interval: 15s\nscrape_configs:\n  - job_name: 'prometheus'\n    static_configs:\n      - targets: ['localhost:9090']")],
+        ['Jalankan & Akses',
+            code_block('bash', "docker compose up -d")
+            . '<p>Grafana di <code>http://ip:3000</code> (login awal admin/admin). Tambahkan Prometheus sebagai data source: <code>http://prometheus:9090</code>.</p>'],
+    ]);
+
+    // ── 44. VPS: WireGuard VPN (wg-easy) ──
+    insert_tutorial($pdo, [
+        'title' => 'VPN Pribadi dengan WireGuard (wg-easy)',
+        'slug' => 'vpn-wireguard-wg-easy',
+        'description' => 'Server VPN cepat & aman dengan UI web untuk kelola klien (QR code, enable/disable) — semua dalam satu container.',
+        'category' => 'VPS', 'icon' => 'LOCK',
+        'tags' => 'VPN,WireGuard,Security,Docker',
+    ], [
+        ['Jalankan wg-easy',
+            '<div class="warning">Ganti <code>WG_HOST</code> dengan IP publik / domain VPS Anda.</div>'
+            . code_block('bash', "docker run -d --name wg-easy \\\n  -e WG_HOST=IP_PUBLIK_ANDA \\\n  -v ~/.wg-easy:/etc/wireguard \\\n  -p 51820:51820/udp -p 51821:51821/tcp \\\n  --cap-add NET_ADMIN --cap-add SYS_MODULE \\\n  --sysctl net.ipv4.ip_forward=1 \\\n  --restart unless-stopped \\\n  ghcr.io/wg-easy/wg-easy")],
+        ['Buka Web UI',
+            code_block('text', "http://ip-vps-anda:51821")
+            . '<p>Buat klien baru, scan QR code dengan aplikasi WireGuard di HP, langsung terhubung.</p>'
+            . '<div class="warning">Buka port 51820/udp di firewall (UFW): <code>sudo ufw allow 51820/udp</code></div>'],
+    ]);
+
+    // ── 45. Tools: Terraform (Infrastructure as Code) ──
+    insert_tutorial($pdo, [
+        'title' => 'Infrastructure as Code dengan Terraform',
+        'slug' => 'infrastructure-as-code-terraform',
+        'description' => 'Definisikan & kelola infrastruktur cloud (server, DNS, dll) sebagai kode yang versioned dan reproducible.',
+        'category' => 'Tools', 'icon' => 'WRENCH',
+        'tags' => 'Terraform,IaC,DevOps,Cloud',
+    ], [
+        ['Install Terraform',
+            code_block('bash', "wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg\necho \"deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com \$(lsb_release -cs) main\" | sudo tee /etc/apt/sources.list.d/hashicorp.list\nsudo apt update && sudo apt install -y terraform")],
+        ['Contoh main.tf',
+            code_block('hcl', "terraform {\n  required_providers {\n    docker = { source = \"kreuzwerker/docker\" }\n  }\n}\n\nresource \"docker_image\" \"nginx\" {\n  name = \"nginx:latest\"\n}\n\nresource \"docker_container\" \"web\" {\n  image = docker_image.nginx.image_id\n  name  = \"web\"\n  ports { internal = 80, external = 8080 }\n}")],
+        ['Workflow Dasar',
+            code_block('bash', "terraform init     # unduh provider\nterraform plan     # pratinjau perubahan\nterraform apply    # terapkan\nterraform destroy  # hapus semua")],
+    ]);
+
+    // ── 46. Database: Self-host Supabase ──
+    insert_tutorial($pdo, [
+        'title' => 'Self-Host Supabase (Alternatif Firebase)',
+        'slug' => 'self-host-supabase',
+        'description' => 'PostgreSQL + Auth + Storage + API otomatis + realtime dalam satu stack open-source yang Anda kontrol penuh.',
+        'category' => 'Database', 'icon' => 'DATABASE',
+        'tags' => 'Supabase,PostgreSQL,Backend,Docker',
+    ], [
+        ['Clone & Siapkan',
+            '<div class="warning">Butuh Docker Compose v2 (pakai <code>docker compose</code>, bukan <code>docker-compose</code>).</div>'
+            . code_block('bash', "git clone --depth 1 https://github.com/supabase/supabase\ncd supabase/docker\ncp .env.example .env")],
+        ['Jalankan',
+            code_block('bash', "docker compose up -d")
+            . '<div class="warning">WAJIB ganti nilai default di <code>.env</code> (POSTGRES_PASSWORD, JWT_SECRET, ANON_KEY, dll) sebelum produksi.</div>'],
+        ['Akses Studio',
+            code_block('text', "http://ip-vps-anda:8000")
+            . '<p>Dashboard Supabase Studio untuk kelola tabel, auth, storage, dan API.</p>'],
+    ]);
+
+    // ── 47. AI: Fine-tune LLM dengan Unsloth ──
+    insert_tutorial($pdo, [
+        'title' => 'Fine-tune LLM Sendiri dengan Unsloth (LoRA)',
+        'slug' => 'fine-tune-llm-unsloth-lora',
+        'description' => 'Latih ulang model (Llama, Gemma, Mistral) dengan data Anda — 2x lebih cepat, hemat 70% memori, bisa di GPU gratis Colab.',
+        'category' => 'AI', 'icon' => 'FIRE',
+        'tags' => 'Fine-tuning,LoRA,QLoRA,GPU',
+    ], [
+        ['Apa itu LoRA/QLoRA?',
+            '<p>LoRA melatih matriks kecil tambahan sambil membekukan bobot dasar model. QLoRA menggabungkan LoRA dengan kuantisasi 4-bit untuk memangkas penggunaan memori — fine-tune bisa jalan dengan VRAM kecil.</p>'
+            . '<div class="tip">Bisa gratis di Google Colab (GPU T4 16GB) atau Kaggle.</div>'],
+        ['Install',
+            code_block('bash', "pip install unsloth")],
+        ['Muat Model + LoRA',
+            code_block('python', "from unsloth import FastLanguageModel\n\nmodel, tokenizer = FastLanguageModel.from_pretrained(\n    model_name = \"unsloth/llama-3-8b-bnb-4bit\",\n    max_seq_length = 2048,\n    load_in_4bit = True,\n)\n\nmodel = FastLanguageModel.get_peft_model(\n    model, r = 16,\n    target_modules = [\"q_proj\",\"k_proj\",\"v_proj\",\"o_proj\"],\n    lora_alpha = 16,\n)")
+            . '<p>Setelah training, ekspor ke GGUF agar bisa dijalankan di Ollama/llama.cpp.</p>'],
+    ]);
+
+    // ── 48. AI: RAG Pipeline (Retrieval-Augmented Generation) ──
+    insert_tutorial($pdo, [
+        'title' => 'Bangun RAG Pipeline (Embeddings + Vector DB)',
+        'slug' => 'bangun-rag-pipeline-embeddings',
+        'description' => 'Buat AI yang menjawab berdasarkan dokumen Anda: embedding, simpan ke vector store, lalu retrieve + generate.',
+        'category' => 'AI', 'icon' => 'CODE',
+        'tags' => 'RAG,Embeddings,Vector DB,LangChain',
+    ], [
+        ['Konsep RAG',
+            '<p>Alur RAG: <strong>(1)</strong> potong dokumen jadi chunk &rarr; <strong>(2)</strong> ubah ke embedding &rarr; <strong>(3)</strong> simpan ke vector DB &rarr; <strong>(4)</strong> saat ada pertanyaan, ambil chunk relevan &rarr; <strong>(5)</strong> kirim ke LLM sebagai konteks.</p>'],
+        ['Install',
+            code_block('bash', "pip install langchain langchain-community langchain-openai chromadb")],
+        ['Contoh Kode',
+            code_block('python', "from langchain_community.document_loaders import TextLoader\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\nfrom langchain_openai import OpenAIEmbeddings\nfrom langchain_community.vectorstores import Chroma\n\ndocs = TextLoader(\"data.txt\").load()\nchunks = RecursiveCharacterTextSplitter(chunk_size=500).split_documents(docs)\n\ndb = Chroma.from_documents(chunks, OpenAIEmbeddings())\nhasil = db.similarity_search(\"pertanyaan saya\", k=3)\nprint(hasil[0].page_content)")
+            . '<div class="tip">Untuk privasi, ganti OpenAIEmbeddings dengan model embedding lokal via Ollama.</div>'],
+    ]);
 }
 
 /** Helper untuk membuat markup blok kode (dipakai saat seed). */

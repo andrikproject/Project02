@@ -529,3 +529,35 @@ textarea.form-control { resize: vertical; min-height: 130px; font-family: 'JetBr
 .card-panel h2 { display: inline-flex; align-items: center; gap: 8px; }
 .card-panel h2 .icn, .admin-bar h1 .icn { color: var(--accent); }
 .row-actions .btn { align-items: center; }
+
+
+/* ════════════════════════════════════════════
+   Syntax highlighting tokens (selalu di atas bg code gelap)
+   ════════════════════════════════════════════ */
+.code-block pre .tok-comment { color: #5b6b88; font-style: italic; }
+.code-block pre .tok-string  { color: #9ece6a; }
+.code-block pre .tok-keyword { color: #7aa2f7; font-weight: 500; }
+.code-block pre .tok-cmd     { color: #bb9af7; font-weight: 500; }
+.code-block pre .tok-number  { color: #ff9e64; }
+.code-block pre .tok-var     { color: #e0af68; }
+.code-block pre .tok-flag    { color: #7dcfff; }
+
+/* ════════════════════════════════════════════
+   Share button & detail action row
+   ════════════════════════════════════════════ */
+.detail-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.btn-share { background: var(--bg2); color: var(--text); border: 1px solid var(--border2); }
+.btn-share:hover { background: var(--bg3); border-color: var(--accent); }
+
+/* ════════════════════════════════════════════
+   Toast
+   ════════════════════════════════════════════ */
+.toast {
+  position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%) translateY(20px);
+  background: var(--bg3); color: var(--text); border: 1px solid var(--border2);
+  padding: 12px 20px; border-radius: 12px; font-size: .9rem; font-weight: 600;
+  box-shadow: var(--shadow); z-index: 2000; opacity: 0; pointer-events: none;
+  transition: opacity .25s, transform .25s; max-width: 90vw;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (min-width: 769px) { .toast { bottom: 30px; } }

@@ -40,6 +40,13 @@ require __DIR__ . '/partials/header.php';
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
+    <div class="detail-actions">
+      <button class="btn btn-share" id="share-btn" type="button"
+              data-title="<?= e($tutorial['title']) ?>"
+              data-text="<?= e($tutorial['description']) ?>">
+        <?= svg_icon('share', 17) ?> Bagikan Tutorial
+      </button>
+    </div>
   </header>
 
   <?php if (empty($steps)): ?>
