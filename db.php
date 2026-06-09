@@ -327,6 +327,121 @@ function seed_data(PDO $pdo): void
             code_block('bash', "cd proyek-anda\nclaude")
             . '<p>Claude Code memahami seluruh struktur repo Anda dan dapat mengedit kode, menjalankan test, serta otomasi review.</p>'],
     ]);
+
+    // ── 13. AI: n8n (workflow automation) ──
+    insert_tutorial($pdo, [
+        'title' => 'Otomasi Workflow AI dengan n8n',
+        'slug' => 'otomasi-workflow-n8n',
+        'description' => 'Platform automation open-source: hubungkan ratusan app & API (termasuk LLM) lewat editor visual, self-hosted.',
+        'category' => 'AI', 'icon' => 'GEAR',
+        'tags' => 'Automation,Self-hosted,No-code,Docker',
+    ], [
+        ['Jalankan Cepat dengan Docker',
+            code_block('bash', "docker run -it --rm \\\n  --name n8n -p 5678:5678 \\\n  -v n8n_data:/home/node/.n8n \\\n  docker.n8n.io/n8nio/n8n")
+            . '<div class="tip">Alternatif tanpa Docker: <code>npx n8n</code> (butuh Node.js 18+).</div>'],
+        ['Akses Editor',
+            code_block('text', "http://localhost:5678")
+            . '<p>Buat akun owner pertama, lalu mulai membangun workflow dengan drag-and-drop node.</p>'],
+        ['Spesifikasi Minimum',
+            '<div class="info-box"><div class="info-grid">'
+            . '<div><div class="label">CPU</div><div class="value">2 core</div></div>'
+            . '<div><div class="label">RAM</div><div class="value">2 GB</div></div>'
+            . '<div><div class="label">Disk</div><div class="value">20 GB</div></div>'
+            . '<div><div class="label">Port</div><div class="value">5678</div></div>'
+            . '</div></div>'
+            . '<div class="warning">Untuk produksi gunakan PostgreSQL + reverse proxy (Caddy/Nginx) + SSL.</div>'],
+    ]);
+
+    // ── 14. AI: Flowise (low-code LLM builder) ──
+    insert_tutorial($pdo, [
+        'title' => 'Bangun Chatbot AI Visual dengan Flowise',
+        'slug' => 'flowise-chatbot-visual',
+        'description' => 'Builder drag-and-drop untuk aplikasi LLM, agen AI, dan RAG. Dibangun di atas LangChain & LlamaIndex.',
+        'category' => 'AI', 'icon' => 'CLOUD',
+        'tags' => 'Low-code,RAG,Chatbot,LangChain',
+    ], [
+        ['Install via NPM',
+            '<div class="warning">Butuh Node.js v18.15.0 / v20 ke atas.</div>'
+            . code_block('bash', "npm install -g flowise\nnpx flowise start")],
+        ['Alternatif: Docker',
+            code_block('bash', "docker run -d --name flowise \\\n  -p 3000:3000 \\\n  flowiseai/flowise")],
+        ['Akses Dashboard',
+            code_block('text', "http://localhost:3000")
+            . '<p>Hubungkan model (OpenAI/Ollama), susun chatflow, uji chatbot, lalu embed ke website atau pakai via API.</p>'
+            . '<div class="tip">Aktifkan auth dengan env <code>FLOWISE_USERNAME</code> & <code>FLOWISE_PASSWORD</code>.</div>'],
+    ]);
+
+    // ── 15. AI: LangChain (framework) ──
+    insert_tutorial($pdo, [
+        'title' => 'Mulai dengan LangChain (Python)',
+        'slug' => 'mulai-langchain-python',
+        'description' => 'Framework untuk membangun aplikasi LLM: chain, agen, RAG, dan integrasi banyak provider model.',
+        'category' => 'AI', 'icon' => 'CODE',
+        'tags' => 'Framework,Python,LLM,RAG',
+    ], [
+        ['Install',
+            '<p>Disarankan pakai virtual environment agar dependency tidak bentrok. Butuh Python 3.9+.</p>'
+            . code_block('bash', "python -m venv venv\nsource venv/bin/activate\npip install langchain langchain-openai python-dotenv")],
+        ['Contoh Chain Sederhana',
+            code_block('python', "import os\nfrom langchain_openai import ChatOpenAI\n\nos.environ[\"OPENAI_API_KEY\"] = \"sk-...\"\n\nllm = ChatOpenAI(model=\"gpt-4o-mini\")\nresp = llm.invoke(\"Jelaskan apa itu LangChain singkat.\")\nprint(resp.content)")
+            . '<div class="tip">Simpan API key di file <code>.env</code>, jangan hardcode di kode produksi.</div>'],
+    ]);
+
+    // ── 16. AI: ComfyUI (Stable Diffusion) ──
+    insert_tutorial($pdo, [
+        'title' => 'Generate Gambar AI dengan ComfyUI',
+        'slug' => 'generate-gambar-comfyui',
+        'description' => 'Antarmuka berbasis node untuk Stable Diffusion: kontrol penuh atas workflow generasi gambar.',
+        'category' => 'AI', 'icon' => 'FIRE',
+        'tags' => 'Stable Diffusion,Image,GPU,Node-based',
+    ], [
+        ['Prasyarat',
+            '<div class="info-box"><div class="info-grid">'
+            . '<div><div class="label">GPU</div><div class="value">NVIDIA 4GB+ VRAM</div></div>'
+            . '<div><div class="label">Python</div><div class="value">3.10 / 3.11</div></div>'
+            . '<div><div class="label">Disk</div><div class="value">20-30 GB</div></div>'
+            . '<div><div class="label">Lain</div><div class="value">Git, CUDA 11.8+</div></div>'
+            . '</div></div>'
+            . '<div class="warning">Python 3.12 dapat bermasalah dengan beberapa extension. Gunakan 3.10/3.11.</div>'],
+        ['Clone & Install',
+            code_block('bash', "git clone https://github.com/comfyanonymous/ComfyUI\ncd ComfyUI\npython -m venv venv\nsource venv/bin/activate\npip install -r requirements.txt")],
+        ['Jalankan',
+            code_block('bash', "python main.py")
+            . '<p>Buka antarmuka di browser:</p>'
+            . code_block('text', "http://localhost:8188")
+            . '<div class="tip">Letakkan file model checkpoint (.safetensors) di folder <code>models/checkpoints/</code>.</div>'],
+    ]);
+
+    // ── 17. AI: AnythingLLM (RAG / Chat dokumen) ──
+    insert_tutorial($pdo, [
+        'title' => 'Chat dengan Dokumen via AnythingLLM',
+        'slug' => 'chat-dokumen-anythingllm',
+        'description' => 'Aplikasi all-in-one untuk RAG: ngobrol dengan PDF/dokumen Anda menggunakan LLM lokal maupun cloud.',
+        'category' => 'AI', 'icon' => 'BOOK',
+        'tags' => 'RAG,Dokumen,Self-hosted,Docker',
+    ], [
+        ['Jalankan dengan Docker',
+            code_block('bash', "docker run -d --name anythingllm \\\n  -p 3001:3001 \\\n  -v anythingllm_storage:/app/server/storage \\\n  mintplexlabs/anythingllm")],
+        ['Konfigurasi & Pakai',
+            code_block('text', "http://localhost:3001")
+            . '<p>Pilih provider LLM (OpenAI, Ollama, dll), buat workspace, unggah dokumen, lalu mulai bertanya berdasarkan isi dokumen tersebut.</p>'],
+    ]);
+
+    // ── 18. AI: Whisper (speech-to-text) ──
+    insert_tutorial($pdo, [
+        'title' => 'Transkrip Audio dengan OpenAI Whisper',
+        'slug' => 'transkrip-audio-whisper',
+        'description' => 'Ubah suara menjadi teks secara lokal dan gratis dengan model speech-to-text Whisper.',
+        'category' => 'AI', 'icon' => 'PHONE',
+        'tags' => 'Speech-to-text,Audio,Python,Offline',
+    ], [
+        ['Install',
+            '<p>Butuh Python & ffmpeg terpasang.</p>'
+            . code_block('bash', "sudo apt install -y ffmpeg\npip install -U openai-whisper")],
+        ['Transkrip File Audio',
+            code_block('bash', "whisper rekaman.mp3 --model small --language Indonesian")
+            . '<div class="tip">Pilihan model: tiny, base, small, medium, large. Makin besar = makin akurat tapi lebih berat.</div>'],
+    ]);
 }
 
 /** Helper untuk membuat markup blok kode (dipakai saat seed). */
