@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Login Admin — ' . APP_NAME;
+$activeNav = 'admin';
 require __DIR__ . '/../partials/header.php';
 ?>
 

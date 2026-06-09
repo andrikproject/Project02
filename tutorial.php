@@ -21,6 +21,7 @@ $tags  = parse_tags($tutorial['tags']);
 
 $pageTitle = $tutorial['title'] . ' — ' . APP_NAME;
 $showProgress = true;
+$activeNav = 'explore';
 require __DIR__ . '/partials/header.php';
 ?>
 

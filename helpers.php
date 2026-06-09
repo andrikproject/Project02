@@ -140,13 +140,16 @@ function icon_options(): array
 /** Daftar kategori tersedia. */
 function category_options(): array
 {
-    return ['AI', 'Termux', 'VPS', 'Tools'];
+    return ['AI', 'Termux', 'VPS', 'Web', 'Bot', 'Database', 'Git', 'Tools'];
 }
 
 /** Pemetaan kategori -> emoji untuk badge. */
 function category_emoji(string $cat): string
 {
-    $map = ['AI' => '🤖', 'Termux' => '📱', 'VPS' => '🖥️', 'Tools' => '🔧'];
+    $map = [
+        'AI' => '🤖', 'Termux' => '📱', 'VPS' => '🖥️', 'Tools' => '🔧',
+        'Web' => '🌐', 'Bot' => '💬', 'Database' => '🗄️', 'Git' => '🐙',
+    ];
     return $map[$cat] ?? '📦';
 }
 

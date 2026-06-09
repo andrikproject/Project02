@@ -105,6 +105,7 @@ $steps = $id ? get_steps($id) : [];
 $flash = $_GET['msg'] ?? '';
 
 $pageTitle = ($id ? 'Edit' : 'Tutorial Baru') . ' — ' . APP_NAME;
+$activeNav = 'admin';
 require __DIR__ . '/../partials/header.php';
 ?>
 

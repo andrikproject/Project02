@@ -6,6 +6,7 @@ $flash = $_GET['msg'] ?? '';
 $tutorials = get_tutorials();
 
 $pageTitle = 'Dashboard Admin — ' . APP_NAME;
+$activeNav = 'admin';
 require __DIR__ . '/../partials/header.php';
 ?>
 

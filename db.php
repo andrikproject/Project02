@@ -577,6 +577,144 @@ function seed_data(PDO $pdo): void
             '<p>Cari model di tab Discover, klik unduh, lalu klik Run. Anda langsung bisa chat dengan UI yang polished — tanpa satu pun perintah terminal.</p>'
             . '<div class="tip">LM Studio juga bisa menjadi server API lokal (OpenAI-compatible) untuk dipakai aplikasi lain.</div>'],
     ]);
+
+    // ── 26. Web: Deploy Website ke VPS (Nginx) ──
+    insert_tutorial($pdo, [
+        'title' => 'Deploy Website ke VPS dengan Nginx',
+        'slug' => 'deploy-website-vps-nginx',
+        'description' => 'Host website statis/PHP di VPS sendiri menggunakan Nginx, lengkap dengan struktur folder yang benar.',
+        'category' => 'Web', 'icon' => 'CLOUD',
+        'tags' => 'Nginx,Deploy,Ubuntu,Hosting',
+    ], [
+        ['Install Nginx',
+            code_block('bash', "sudo apt update\nsudo apt install -y nginx\nsudo systemctl enable --now nginx")
+            . '<div class="tip">Cek di browser: <code>http://ip-vps-anda</code> akan menampilkan halaman default Nginx.</div>'],
+        ['Upload File Website',
+            '<p>Letakkan file website Anda di folder web root:</p>'
+            . code_block('bash', "sudo mkdir -p /var/www/situs-saya\nsudo chown -R \$USER:\$USER /var/www/situs-saya\n# salin file: scp -r ./dist/* user@ip:/var/www/situs-saya/")],
+        ['Buat Server Block',
+            code_block('bash', "sudo nano /etc/nginx/sites-available/situs-saya")
+            . code_block('nginx', "server {\n    listen 80;\n    server_name domainanda.com;\n    root /var/www/situs-saya;\n    index index.html index.php;\n\n    location / {\n        try_files \$uri \$uri/ =404;\n    }\n}")
+            . code_block('bash', "sudo ln -s /etc/nginx/sites-available/situs-saya /etc/nginx/sites-enabled/\nsudo nginx -t && sudo systemctl reload nginx")],
+    ]);
+
+    // ── 27. Web: HTTPS gratis dengan Caddy ──
+    insert_tutorial($pdo, [
+        'title' => 'Website HTTPS Otomatis dengan Caddy',
+        'slug' => 'website-https-caddy',
+        'description' => 'Reverse proxy + sertifikat SSL otomatis (Let\'s Encrypt) hanya dengan beberapa baris konfigurasi.',
+        'category' => 'Web', 'icon' => 'LOCK',
+        'tags' => 'Caddy,SSL,HTTPS,Reverse Proxy',
+    ], [
+        ['Install Caddy',
+            code_block('bash', "sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl\ncurl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg\ncurl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list\nsudo apt update && sudo apt install -y caddy")],
+        ['Konfigurasi Caddyfile',
+            code_block('bash', "sudo nano /etc/caddy/Caddyfile")
+            . code_block('text', "domainanda.com {\n    root * /var/www/situs-saya\n    file_server\n}")
+            . '<div class="tip">Caddy otomatis mengurus sertifikat HTTPS — tidak perlu setup manual!</div>'],
+        ['Reload',
+            code_block('bash', "sudo systemctl reload caddy")],
+    ]);
+
+    // ── 28. Bot: Telegram ──
+    insert_tutorial($pdo, [
+        'title' => 'Buat Bot Telegram (Python)',
+        'slug' => 'buat-bot-telegram-python',
+        'description' => 'Dari membuat token via BotFather hingga bot pertama yang membalas pesan dengan python-telegram-bot.',
+        'category' => 'Bot', 'icon' => 'PHONE',
+        'tags' => 'Telegram,Python,BotFather',
+    ], [
+        ['Dapatkan Token dari BotFather',
+            '<p>Buka Telegram, cari <code>@BotFather</code>, kirim <code>/newbot</code>, ikuti instruksi, lalu salin token yang diberikan.</p>'
+            . '<div class="warning">Jangan bagikan token bot Anda ke publik.</div>'],
+        ['Install Library',
+            code_block('bash', "pip install python-telegram-bot")],
+        ['Kode Bot Pertama',
+            code_block('python', "from telegram import Update\nfrom telegram.ext import Application, CommandHandler, ContextTypes\n\nasync def start(update: Update, context: ContextTypes.DEFAULT_TYPE):\n    await update.message.reply_text(\"Halo! Bot aktif 🚀\")\n\napp = Application.builder().token(\"TOKEN_ANDA\").build()\napp.add_handler(CommandHandler(\"start\", start))\napp.run_polling()")
+            . '<p>Jalankan, lalu kirim <code>/start</code> ke bot Anda di Telegram.</p>'],
+    ]);
+
+    // ── 29. Bot: WhatsApp ──
+    insert_tutorial($pdo, [
+        'title' => 'Buat Bot WhatsApp dengan Baileys',
+        'slug' => 'buat-bot-whatsapp-baileys',
+        'description' => 'Bot WhatsApp berbasis Node.js menggunakan Baileys — login via QR code, tanpa browser.',
+        'category' => 'Bot', 'icon' => 'PHONE',
+        'tags' => 'WhatsApp,Node.js,Baileys',
+    ], [
+        ['Siapkan Proyek',
+            code_block('bash', "mkdir wa-bot && cd wa-bot\nnpm init -y\nnpm install @whiskeysockets/baileys qrcode-terminal")],
+        ['Kode Dasar',
+            code_block('javascript', "const { default: makeWASocket, useMultiFileAuthState } = require('@whiskeysockets/baileys')\nconst qrcode = require('qrcode-terminal')\n\nasync function start() {\n  const { state, saveCreds } = await useMultiFileAuthState('auth')\n  const sock = makeWASocket({ auth: state })\n\n  sock.ev.on('connection.update', ({ qr }) => { if (qr) qrcode.generate(qr, { small: true }) })\n  sock.ev.on('creds.update', saveCreds)\n\n  sock.ev.on('messages.upsert', async ({ messages }) => {\n    const m = messages[0]\n    if (!m.message || m.key.fromMe) return\n    await sock.sendMessage(m.key.remoteJid, { text: 'Halo dari bot! 🤖' })\n  })\n}\nstart()")
+            . '<div class="warning">Scan QR code yang muncul di terminal memakai WhatsApp di HP (Perangkat Tertaut).</div>'],
+    ]);
+
+    // ── 30. Database: MySQL/MariaDB ──
+    insert_tutorial($pdo, [
+        'title' => 'Setup MySQL / MariaDB di VPS',
+        'slug' => 'setup-mysql-mariadb-vps',
+        'description' => 'Install database MySQL/MariaDB, amankan instalasi, dan buat database + user pertama Anda.',
+        'category' => 'Database', 'icon' => 'DATABASE',
+        'tags' => 'MySQL,MariaDB,SQL,Ubuntu',
+    ], [
+        ['Install',
+            code_block('bash', "sudo apt update\nsudo apt install -y mariadb-server\nsudo systemctl enable --now mariadb")],
+        ['Amankan Instalasi',
+            code_block('bash', "sudo mysql_secure_installation")
+            . '<div class="tip">Set password root, hapus user anonim, dan nonaktifkan login root jarak jauh.</div>'],
+        ['Buat Database & User',
+            code_block('sql', "CREATE DATABASE aplikasi;\nCREATE USER 'appuser'@'localhost' IDENTIFIED BY 'password_kuat';\nGRANT ALL PRIVILEGES ON aplikasi.* TO 'appuser'@'localhost';\nFLUSH PRIVILEGES;")],
+    ]);
+
+    // ── 31. Database: MongoDB ──
+    insert_tutorial($pdo, [
+        'title' => 'Jalankan MongoDB dengan Docker',
+        'slug' => 'jalankan-mongodb-docker',
+        'description' => 'Database NoSQL populer untuk aplikasi modern, dijalankan cepat lewat Docker.',
+        'category' => 'Database', 'icon' => 'DATABASE',
+        'tags' => 'MongoDB,NoSQL,Docker',
+    ], [
+        ['Jalankan Container',
+            code_block('bash', "docker run -d --name mongodb \\\n  -p 27017:27017 \\\n  -e MONGO_INITDB_ROOT_USERNAME=admin \\\n  -e MONGO_INITDB_ROOT_PASSWORD=rahasia \\\n  -v mongo_data:/data/db \\\n  --restart always \\\n  mongo:7")],
+        ['Koneksi',
+            code_block('bash', "docker exec -it mongodb mongosh -u admin -p rahasia")
+            . '<div class="tip">String koneksi aplikasi: <code>mongodb://admin:rahasia@localhost:27017</code></div>'],
+    ]);
+
+    // ── 32. Git: Dasar Git & GitHub ──
+    insert_tutorial($pdo, [
+        'title' => 'Dasar Git & Push ke GitHub',
+        'slug' => 'dasar-git-github',
+        'description' => 'Dari init repo, commit pertama, hingga push ke GitHub. Wajib untuk semua developer.',
+        'category' => 'Git', 'icon' => 'CODE',
+        'tags' => 'Git,GitHub,Version Control',
+    ], [
+        ['Konfigurasi Awal',
+            code_block('bash', "git config --global user.name \"Nama Anda\"\ngit config --global user.email \"email@anda.com\"")],
+        ['Init & Commit Pertama',
+            code_block('bash', "git init\ngit add .\ngit commit -m \"Commit pertama\"")],
+        ['Hubungkan ke GitHub',
+            '<p>Buat repo kosong di GitHub, lalu hubungkan dan push:</p>'
+            . code_block('bash', "git remote add origin https://github.com/username/repo.git\ngit branch -M main\ngit push -u origin main")
+            . '<div class="tip">Gunakan Personal Access Token sebagai password saat diminta (GitHub tidak lagi menerima password akun).</div>'],
+    ]);
+
+    // ── 33. Git: SSH Key untuk GitHub ──
+    insert_tutorial($pdo, [
+        'title' => 'Setup SSH Key untuk GitHub',
+        'slug' => 'setup-ssh-key-github',
+        'description' => 'Push & pull tanpa memasukkan password berulang dengan autentikasi SSH key.',
+        'category' => 'Git', 'icon' => 'LOCK',
+        'tags' => 'Git,SSH,GitHub,Security',
+    ], [
+        ['Generate SSH Key',
+            code_block('bash', "ssh-keygen -t ed25519 -C \"email@anda.com\"\ncat ~/.ssh/id_ed25519.pub")],
+        ['Tambahkan ke GitHub',
+            '<p>Salin isi public key, lalu di GitHub buka <strong>Settings &rarr; SSH and GPG keys &rarr; New SSH key</strong> dan tempel.</p>'],
+        ['Uji Koneksi',
+            code_block('bash', "ssh -T git@github.com")
+            . '<div class="tip">Setelah ini, gunakan URL remote SSH: <code>git@github.com:username/repo.git</code></div>'],
+    ]);
 }
 
 /** Helper untuk membuat markup blok kode (dipakai saat seed). */
