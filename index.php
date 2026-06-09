@@ -31,7 +31,7 @@ require __DIR__ . '/partials/header.php';
 
   <!-- Pencarian -->
   <form method="get" action="<?= e(url('index.php')) ?>" class="search-box">
-    <span class="ico">🔍</span>
+    <span class="ico"><?= svg_icon('search', 18) ?></span>
     <input type="text" name="q" value="<?= e($search) ?>" placeholder="Cari tutorial... (ollama, docker, telegram)">
     <?php if ($activeCat !== 'Semua'): ?>
       <input type="hidden" name="cat" value="<?= e($activeCat) ?>">
@@ -47,18 +47,19 @@ require __DIR__ . '/partials/header.php';
         $isActive = ($c === $activeCat);
         $qs = http_build_query(array_filter(['cat' => $c === 'Semua' ? null : $c, 'q' => $search ?: null]));
         $href = url('index.php') . ($qs ? '?' . $qs : '') . '#jelajah';
-        $label = $c === 'Semua' ? '📚 Semua' : category_emoji($c) . ' ' . $c;
     ?>
-      <a class="filter-chip <?= $isActive ? 'active' : '' ?>" href="<?= e($href) ?>"><?= e($label) ?></a>
+      <a class="filter-chip <?= $isActive ? 'active' : '' ?>" href="<?= e($href) ?>">
+        <?= category_icon($c, 15) ?> <?= e($c === 'Semua' ? 'Semua' : $c) ?>
+      </a>
     <?php endforeach; ?>
   </div>
 
   <!-- Judul daftar -->
   <div class="list-head">
     <h2>
-      <?php if ($search !== ''): ?>Hasil: "<?= e($search) ?>"
-      <?php elseif ($activeCat !== 'Semua'): ?><?= category_emoji($activeCat) ?> <?= e($activeCat) ?>
-      <?php else: ?>Semua Tutorial<?php endif; ?>
+      <?php if ($search !== ''): ?><?= svg_icon('search', 18) ?> Hasil: "<?= e($search) ?>"
+      <?php elseif ($activeCat !== 'Semua'): ?><?= category_icon($activeCat, 18) ?> <?= e($activeCat) ?>
+      <?php else: ?><?= svg_icon('grid', 18) ?> Semua Tutorial<?php endif; ?>
     </h2>
     <span class="count"><?= count($tutorials) ?> item</span>
   </div>
@@ -69,7 +70,7 @@ require __DIR__ . '/partials/header.php';
       <div class="ico">🗂️</div>
       <p>Belum ada tutorial yang cocok.</p>
       <?php if ($search !== '' || $activeCat !== 'Semua'): ?>
-        <p><a class="back-link" href="<?= e(url('index.php')) ?>">← Tampilkan semua tutorial</a></p>
+        <p><a class="back-link" href="<?= e(url('index.php')) ?>"><?= svg_icon('arrow-left', 16) ?> Tampilkan semua tutorial</a></p>
       <?php endif; ?>
     </div>
   <?php else: ?>
@@ -77,14 +78,14 @@ require __DIR__ . '/partials/header.php';
       <?php foreach ($tutorials as $t): ?>
         <a class="card cat-<?= e($t['category']) ?>" href="<?= e(url('tutorial.php?id=' . (int)$t['id'])) ?>">
           <div class="card-top">
-            <div class="card-icon"><?= icon_emoji($t['icon']) ?></div>
-            <span class="badge"><?= category_emoji($t['category']) ?> <?= e($t['category']) ?></span>
+            <div class="card-icon"><?= tutorial_icon($t['icon'], 24) ?></div>
+            <span class="badge"><?= category_icon($t['category'], 13) ?> <?= e($t['category']) ?></span>
           </div>
           <h3><?= e($t['title']) ?></h3>
           <p><?= e($t['description']) ?></p>
           <div class="card-meta">
-            <span>📋 <?= (int)$t['step_count'] ?> langkah</span>
-            <span class="go">Buka →</span>
+            <span><?= svg_icon('list', 14) ?> <?= (int)$t['step_count'] ?> langkah</span>
+            <span class="go">Buka <?= svg_icon('arrow-right', 14) ?></span>
           </div>
         </a>
       <?php endforeach; ?>

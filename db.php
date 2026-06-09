@@ -715,6 +715,114 @@ function seed_data(PDO $pdo): void
             code_block('bash', "ssh -T git@github.com")
             . '<div class="tip">Setelah ini, gunakan URL remote SSH: <code>git@github.com:username/repo.git</code></div>'],
     ]);
+
+    // ── 34. Web: Cloudflare Tunnel ──
+    insert_tutorial($pdo, [
+        'title' => 'Ekspos Lokal ke Internet (Cloudflare Tunnel)',
+        'slug' => 'cloudflare-tunnel-ekspos-lokal',
+        'description' => 'Akses aplikasi di komputer/VPS dari internet lewat domain Cloudflare, tanpa buka port atau IP publik.',
+        'category' => 'Web', 'icon' => 'CLOUD',
+        'tags' => 'Cloudflare,Tunnel,Tanpa Port,HTTPS',
+    ], [
+        ['Install cloudflared',
+            code_block('bash', "curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared\nsudo install cloudflared /usr/local/bin/")],
+        ['Tunnel Cepat (uji coba)',
+            '<p>Membuat URL publik acak untuk aplikasi lokal di port 8000:</p>'
+            . code_block('bash', "cloudflared tunnel --url http://localhost:8000")
+            . '<div class="tip">Cocok untuk demo cepat. Untuk permanen, gunakan named tunnel + domain Anda.</div>'],
+    ]);
+
+    // ── 35. VPS: Portainer (Docker GUI) ──
+    insert_tutorial($pdo, [
+        'title' => 'Kelola Docker via GUI dengan Portainer',
+        'slug' => 'kelola-docker-portainer',
+        'description' => 'Dashboard web untuk mengelola container, image, volume, dan network Docker tanpa hafal perintah.',
+        'category' => 'VPS', 'icon' => 'GEAR',
+        'tags' => 'Docker,GUI,Management',
+    ], [
+        ['Jalankan Portainer',
+            code_block('bash', "docker volume create portainer_data\ndocker run -d -p 9443:9443 --name portainer --restart always \\\n  -v /var/run/docker.sock:/var/run/docker.sock \\\n  -v portainer_data:/data \\\n  portainer/portainer-ce:latest")],
+        ['Akses & Buat Admin',
+            code_block('text', "https://ip-vps-anda:9443")
+            . '<div class="tip">Buat akun admin pada akses pertama (jangan tunda terlalu lama demi keamanan).</div>'],
+    ]);
+
+    // ── 36. VPS: Uptime Kuma ──
+    insert_tutorial($pdo, [
+        'title' => 'Monitoring Uptime dengan Uptime Kuma',
+        'slug' => 'monitoring-uptime-kuma',
+        'description' => 'Pantau status website/server Anda dan dapatkan notifikasi saat down. Self-hosted & cantik.',
+        'category' => 'VPS', 'icon' => 'GEAR',
+        'tags' => 'Monitoring,Uptime,Notifikasi',
+    ], [
+        ['Jalankan dengan Docker',
+            code_block('bash', "docker run -d --name uptime-kuma --restart always \\\n  -p 3001:3001 \\\n  -v uptime-kuma:/app/data \\\n  louislam/uptime-kuma:1")],
+        ['Akses Dashboard',
+            code_block('text', "http://ip-vps-anda:3001")
+            . '<p>Tambahkan monitor (HTTP, TCP, ping), atur interval, dan hubungkan notifikasi (Telegram, Discord, email).</p>'],
+    ]);
+
+    // ── 37. Tools: yt-dlp ──
+    insert_tutorial($pdo, [
+        'title' => 'Download Video dengan yt-dlp',
+        'slug' => 'download-video-yt-dlp',
+        'description' => 'Unduh video/audio dari berbagai situs lewat command line. Penerus youtube-dl yang aktif dikembangkan.',
+        'category' => 'Tools', 'icon' => 'WRENCH',
+        'tags' => 'Download,Video,CLI,FFmpeg',
+    ], [
+        ['Install',
+            code_block('bash', "sudo apt install -y ffmpeg\npip install -U yt-dlp")
+            . '<div class="tip">ffmpeg dibutuhkan untuk menggabungkan video+audio kualitas tinggi.</div>'],
+        ['Contoh Penggunaan',
+            code_block('bash', "# Unduh video terbaik\nyt-dlp \"https://situs.com/video\"\n\n# Hanya audio (mp3)\nyt-dlp -x --audio-format mp3 \"https://situs.com/video\"")
+            . '<div class="warning">Hanya unduh konten yang Anda miliki haknya atau yang diizinkan untuk diunduh.</div>'],
+    ]);
+
+    // ── 38. Tools: FFmpeg ──
+    insert_tutorial($pdo, [
+        'title' => 'Olah Video & Audio dengan FFmpeg',
+        'slug' => 'olah-media-ffmpeg',
+        'description' => 'Konversi, potong, kompres, dan ubah format media dari command line — tool serbaguna untuk multimedia.',
+        'category' => 'Tools', 'icon' => 'WRENCH',
+        'tags' => 'Video,Audio,Konversi,CLI',
+    ], [
+        ['Install',
+            code_block('bash', "sudo apt install -y ffmpeg\nffmpeg -version")],
+        ['Perintah Berguna',
+            code_block('bash', "# Konversi MP4 ke MP3\nffmpeg -i input.mp4 output.mp3\n\n# Kompres video\nffmpeg -i input.mp4 -vcodec libx264 -crf 28 output.mp4\n\n# Potong (mulai 00:10 selama 30 detik)\nffmpeg -ss 00:00:10 -i input.mp4 -t 30 -c copy potong.mp4")],
+    ]);
+
+    // ── 39. Web: PM2 (Node process manager) ──
+    insert_tutorial($pdo, [
+        'title' => 'Jalankan App Node.js 24/7 dengan PM2',
+        'slug' => 'nodejs-pm2-production',
+        'description' => 'Process manager untuk menjaga aplikasi Node.js tetap hidup, auto-restart, dan jalan otomatis saat boot.',
+        'category' => 'Web', 'icon' => 'ROCKET',
+        'tags' => 'Node.js,PM2,Production,Deploy',
+    ], [
+        ['Install PM2',
+            code_block('bash', "npm install -g pm2")],
+        ['Jalankan & Kelola App',
+            code_block('bash', "pm2 start app.js --name aplikasi\npm2 list\npm2 logs aplikasi\npm2 restart aplikasi")],
+        ['Auto-start saat Boot',
+            code_block('bash', "pm2 startup\npm2 save")
+            . '<div class="tip">Perintah <code>pm2 save</code> menyimpan daftar proses agar dipulihkan setelah reboot.</div>'],
+    ]);
+
+    // ── 40. VPS: Cron (penjadwalan tugas) ──
+    insert_tutorial($pdo, [
+        'title' => 'Jadwalkan Tugas Otomatis dengan Cron',
+        'slug' => 'jadwal-tugas-cron',
+        'description' => 'Jalankan script/backup secara otomatis pada waktu tertentu menggunakan crontab di Linux.',
+        'category' => 'VPS', 'icon' => 'GEAR',
+        'tags' => 'Cron,Otomasi,Backup,Linux',
+    ], [
+        ['Buka Editor Crontab',
+            code_block('bash', "crontab -e")],
+        ['Contoh Jadwal',
+            code_block('bash', "# menit jam tgl bln hari-pekan  perintah\n0 2 * * *   /home/user/backup.sh        # tiap hari pukul 02:00\n*/15 * * * * curl -s https://situs/ping  # tiap 15 menit\n0 0 * * 0   docker system prune -f       # tiap Minggu tengah malam")
+            . '<div class="tip">Gunakan <code>crontab -l</code> untuk melihat daftar jadwal aktif.</div>'],
+    ]);
 }
 
 /** Helper untuk membuat markup blok kode (dipakai saat seed). */

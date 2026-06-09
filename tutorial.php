@@ -10,7 +10,7 @@ if (!$tutorial) {
     require __DIR__ . '/partials/header.php';
     echo '<div class="container section-pad"><div class="empty"><div class="ico">🔍</div>'
        . '<p>Tutorial tidak ditemukan.</p>'
-       . '<p><a class="back-link" href="' . e(url('index.php')) . '">← Kembali ke beranda</a></p>'
+       . '<p><a class="back-link" href="' . e(url('index.php')) . '">' . svg_icon('arrow-left', 16) . ' Kembali ke beranda</a></p>'
        . '</div></div>';
     require __DIR__ . '/partials/footer.php';
     exit;
@@ -27,11 +27,11 @@ require __DIR__ . '/partials/header.php';
 
 <div class="container">
 
-  <a class="back-link" href="<?= e(url('index.php')) ?>">← Semua Tutorial</a>
+  <a class="back-link" href="<?= e(url('index.php')) ?>"><?= svg_icon('arrow-left', 16) ?> Semua Tutorial</a>
 
   <header class="detail-head">
-    <span class="badge"><?= category_emoji($tutorial['category']) ?> <?= e($tutorial['category']) ?></span>
-    <h1><?= icon_emoji($tutorial['icon']) ?> <?= e($tutorial['title']) ?></h1>
+    <span class="badge"><?= category_icon($tutorial['category'], 14) ?> <?= e($tutorial['category']) ?></span>
+    <h1><span class="title-ic"><?= tutorial_icon($tutorial['icon'], 26) ?></span> <?= e($tutorial['title']) ?></h1>
     <p><?= e($tutorial['description']) ?></p>
     <?php if ($tags): ?>
       <div class="specs">
@@ -48,7 +48,7 @@ require __DIR__ . '/partials/header.php';
 
     <!-- Daftar Isi -->
     <nav class="toc">
-      <h2>📋 Daftar Isi — <?= count($steps) ?> Langkah</h2>
+      <h2><?= svg_icon('list', 17) ?> Daftar Isi — <?= count($steps) ?> Langkah</h2>
       <ol>
         <?php foreach ($steps as $i => $s): ?>
           <li><a href="#step-<?= $i + 1 ?>"><?= e($s['title']) ?></a></li>
@@ -63,7 +63,7 @@ require __DIR__ . '/partials/header.php';
           <div class="step-header">
             <span class="step-number"><?= $n ?></span>
             <span class="step-title"><?= e($s['title']) ?></span>
-            <span class="step-icon">▼</span>
+            <span class="step-icon"><?= svg_icon('chevron-down', 20) ?></span>
           </div>
           <div class="step-body">
             <?= $s['body'] /* HTML konten langkah, dikelola admin */ ?>

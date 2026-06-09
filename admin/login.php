@@ -28,7 +28,7 @@ require __DIR__ . '/../partials/header.php';
 
 <div class="login-wrap">
   <div class="login-card card-panel">
-    <h2>🔑 Login Admin</h2>
+    <h2><?= svg_icon('key', 18) ?> Login Admin</h2>
     <?php if ($error): ?>
       <div class="alert alert-error"><?= e($error) ?></div>
     <?php endif; ?>

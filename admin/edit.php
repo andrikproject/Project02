@@ -112,8 +112,8 @@ require __DIR__ . '/../partials/header.php';
 <div class="admin-wrap section-pad">
 
   <div class="admin-bar">
-    <h1><?= $id ? '✏️ Edit Tutorial' : '➕ Tutorial Baru' ?></h1>
-    <a class="btn btn-ghost btn-sm" href="<?= e(url('admin/index.php')) ?>">← Dashboard</a>
+    <h1><?= $id ? svg_icon('edit', 20) . ' Edit Tutorial' : svg_icon('plus', 20) . ' Tutorial Baru' ?></h1>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('admin/index.php')) ?>"><?= svg_icon('arrow-left', 16) ?> Dashboard</a>
   </div>
 
   <?php if ($error): ?><div class="alert alert-error"><?= e($error) ?></div><?php endif; ?>
@@ -121,7 +121,7 @@ require __DIR__ . '/../partials/header.php';
 
   <!-- ── Form metadata tutorial ── -->
   <div class="card-panel">
-    <h2>📄 Informasi Tutorial</h2>
+    <h2><?= svg_icon('book', 18) ?> Informasi Tutorial</h2>
     <form method="post" action="<?= e(url('admin/edit.php' . ($id ? '?id=' . $id : ''))) ?>">
       <?= csrf_field() ?>
       <input type="hidden" name="action" value="save_tutorial">
@@ -167,7 +167,7 @@ require __DIR__ . '/../partials/header.php';
                value="<?= e($tutorial['tags'] ?? '') ?>" placeholder="Docker, Ubuntu, Gratis">
       </div>
 
-      <button class="btn btn-primary" type="submit">💾 Simpan Tutorial</button>
+      <button class="btn btn-primary" type="submit"><?= svg_icon('save', 17) ?> Simpan Tutorial</button>
     </form>
   </div>
 
@@ -177,7 +177,7 @@ require __DIR__ . '/../partials/header.php';
 
     <!-- ── Kelola langkah ── -->
     <div id="langkah">
-      <div class="admin-bar"><h1 style="font-size:1.1rem">📋 Langkah-langkah (<?= count($steps) ?>)</h1></div>
+      <div class="admin-bar"><h1 style="font-size:1.1rem"><?= svg_icon('list', 18) ?> Langkah-langkah (<?= count($steps) ?>)</h1></div>
 
       <?php foreach ($steps as $i => $s): $n = $i + 1; ?>
         <div class="step-edit" id="step-edit-<?= (int)$s['id'] ?>">
@@ -203,7 +203,7 @@ require __DIR__ . '/../partials/header.php';
             </div>
 
             <div class="row-actions">
-              <button class="btn btn-primary btn-sm" type="submit">💾 Simpan langkah</button>
+              <button class="btn btn-primary btn-sm" type="submit"><?= svg_icon('save', 15) ?> Simpan langkah</button>
             </div>
           </form>
 
@@ -214,7 +214,7 @@ require __DIR__ . '/../partials/header.php';
               <input type="hidden" name="action" value="move_step">
               <input type="hidden" name="step_id" value="<?= (int)$s['id'] ?>">
               <input type="hidden" name="dir" value="up">
-              <button class="btn btn-ghost btn-sm" type="submit" <?= $i === 0 ? 'disabled' : '' ?>>↑</button>
+              <button class="btn btn-ghost btn-sm" type="submit" title="Naik" <?= $i === 0 ? 'disabled' : '' ?>><span style="transform:rotate(180deg);display:inline-grid"><?= svg_icon('chevron-down', 15) ?></span></button>
             </form>
             <!-- Pindah bawah -->
             <form method="post" action="<?= e(url('admin/edit.php?id=' . $id)) ?>" style="display:inline">
@@ -222,7 +222,7 @@ require __DIR__ . '/../partials/header.php';
               <input type="hidden" name="action" value="move_step">
               <input type="hidden" name="step_id" value="<?= (int)$s['id'] ?>">
               <input type="hidden" name="dir" value="down">
-              <button class="btn btn-ghost btn-sm" type="submit" <?= $i === count($steps) - 1 ? 'disabled' : '' ?>>↓</button>
+              <button class="btn btn-ghost btn-sm" type="submit" title="Turun" <?= $i === count($steps) - 1 ? 'disabled' : '' ?>><?= svg_icon('chevron-down', 15) ?></button>
             </form>
             <!-- Hapus -->
             <form method="post" action="<?= e(url('admin/edit.php?id=' . $id)) ?>" style="display:inline"
@@ -230,7 +230,7 @@ require __DIR__ . '/../partials/header.php';
               <?= csrf_field() ?>
               <input type="hidden" name="action" value="delete_step">
               <input type="hidden" name="step_id" value="<?= (int)$s['id'] ?>">
-              <button class="btn btn-danger btn-sm" type="submit">🗑️ Hapus</button>
+              <button class="btn btn-danger btn-sm" type="submit"><?= svg_icon('trash', 15) ?> Hapus</button>
             </form>
           </div>
         </div>
@@ -238,7 +238,7 @@ require __DIR__ . '/../partials/header.php';
 
       <!-- ── Tambah langkah baru ── -->
       <div class="card-panel">
-        <h2>➕ Tambah Langkah</h2>
+        <h2><?= svg_icon('plus', 18) ?> Tambah Langkah</h2>
         <form method="post" action="<?= e(url('admin/edit.php?id=' . $id)) ?>">
           <?= csrf_field() ?>
           <input type="hidden" name="action" value="add_step">
@@ -257,7 +257,7 @@ require __DIR__ . '/../partials/header.php';
             <label>Isi langkah <span class="muted">(HTML didukung — gunakan tombol di atas)</span></label>
             <textarea class="form-control step-body-input" name="step_body" rows="8" placeholder="<p>Penjelasan...</p>"></textarea>
           </div>
-          <button class="btn btn-primary" type="submit">+ Tambah Langkah</button>
+          <button class="btn btn-primary" type="submit"><?= svg_icon('plus', 16) ?> Tambah Langkah</button>
         </form>
       </div>
     </div>

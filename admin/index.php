@@ -13,10 +13,10 @@ require __DIR__ . '/../partials/header.php';
 <div class="admin-wrap section-pad">
 
   <div class="admin-bar">
-    <h1>⚙️ Dashboard Admin</h1>
+    <h1><?= svg_icon('settings', 22) ?> Dashboard Admin</h1>
     <div class="row-actions">
-      <a class="btn btn-primary btn-sm" href="<?= e(url('admin/edit.php')) ?>">+ Tutorial Baru</a>
-      <a class="btn btn-ghost btn-sm" href="<?= e(url('admin/logout.php')) ?>">Keluar</a>
+      <a class="btn btn-primary btn-sm" href="<?= e(url('admin/edit.php')) ?>"><?= svg_icon('plus', 16) ?> Tutorial Baru</a>
+      <a class="btn btn-ghost btn-sm" href="<?= e(url('admin/logout.php')) ?>"><?= svg_icon('logout', 16) ?> Keluar</a>
     </div>
   </div>
 
@@ -46,19 +46,19 @@ require __DIR__ . '/../partials/header.php';
           <?php foreach ($tutorials as $t): ?>
             <tr>
               <td>
-                <strong><?= icon_emoji($t['icon']) ?> <?= e($t['title']) ?></strong><br>
+                <strong><?= tutorial_icon($t['icon'], 18) ?> <?= e($t['title']) ?></strong><br>
                 <span class="muted"><?= e($t['description']) ?></span>
               </td>
-              <td><span class="badge"><?= category_emoji($t['category']) ?> <?= e($t['category']) ?></span></td>
+              <td><span class="badge"><?= category_icon($t['category'], 13) ?> <?= e($t['category']) ?></span></td>
               <td><?= (int)$t['step_count'] ?></td>
               <td>
                 <div class="row-actions">
-                  <a class="btn btn-ghost btn-sm" href="<?= e(url('tutorial.php?id=' . (int)$t['id'])) ?>" target="_blank">👁️</a>
-                  <a class="btn btn-ghost btn-sm" href="<?= e(url('admin/edit.php?id=' . (int)$t['id'])) ?>">✏️ Edit</a>
+                  <a class="btn btn-ghost btn-sm" href="<?= e(url('tutorial.php?id=' . (int)$t['id'])) ?>" target="_blank" title="Lihat"><?= svg_icon('eye', 16) ?></a>
+                  <a class="btn btn-ghost btn-sm" href="<?= e(url('admin/edit.php?id=' . (int)$t['id'])) ?>"><?= svg_icon('edit', 16) ?> Edit</a>
                   <form method="post" action="<?= e(url('admin/delete.php')) ?>" onsubmit="return confirm('Hapus tutorial ini beserta semua langkahnya?');" style="display:inline">
                     <?= csrf_field() ?>
                     <input type="hidden" name="id" value="<?= (int)$t['id'] ?>">
-                    <button class="btn btn-danger btn-sm" type="submit">🗑️</button>
+                    <button class="btn btn-danger btn-sm" type="submit" title="Hapus"><?= svg_icon('trash', 16) ?></button>
                   </form>
                 </div>
               </td>

@@ -98,3 +98,22 @@ function insertSnippet(btn, type) {
   ta.focus();
   ta.selectionStart = ta.selectionEnd = start + text.length;
 }
+
+
+// ── Toggle tema terang/gelap ──
+(function () {
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', t === 'light' ? '#f5f7fb' : '#070b14');
+    try { localStorage.setItem('theme', t); } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
+    });
+  });
+})();
