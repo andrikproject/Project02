@@ -222,6 +222,111 @@ function seed_data(PDO $pdo): void
         ['Cek Status',
             code_block('bash', "sudo ufw status verbose\nsudo fail2ban-client status sshd")],
     ]);
+
+    // ── 8. AI: Install Hermes Agent ──
+    insert_tutorial($pdo, [
+        'title' => 'Install Hermes Agent (Nous Research)',
+        'slug' => 'install-hermes-agent',
+        'description' => 'AI agent open-source (MIT) yang berjalan di infrastruktur sendiri, belajar dari setiap tugas, dan menyimpan memori antar sesi.',
+        'category' => 'AI', 'icon' => 'ROCKET',
+        'tags' => 'Agent,Self-hosted,Open Source,VPS',
+    ], [
+        ['Install (Linux / macOS)',
+            '<p>Hermes Agent dapat berjalan di laptop, VPS, Docker, maupun serverless. Install dengan satu perintah:</p>'
+            . code_block('bash', "curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash")
+            . '<div class="tip">Windows: jalankan di PowerShell <code>iex (irm https://hermes-agent.nousresearch.com/install.ps1)</code> — disarankan via WSL2.</div>'],
+        ['Setup via Portal',
+            '<p>Satu kali OAuth mencakup model + 4 tool gateway (web search, image generation, TTS, browser):</p>'
+            . code_block('bash', "hermes setup --portal")
+            . '<div class="warning">Restart terminal setelah install agar PATH mengenali perintah <code>hermes</code>.</div>'],
+        ['Mulai Chat Pertama',
+            '<p>Aturan praktis: pastikan satu percakapan chat berjalan bersih dulu sebelum menambah fitur lain (gateway, cron, skills, voice).</p>'
+            . code_block('bash', "hermes")],
+        ['Opsional: Pakai Model Lokal (Ollama)',
+            '<p>Secara default Hermes terhubung ke provider cloud (Anthropic/OpenAI). Anda bisa menggantinya dengan Ollama agar 100% lokal & tanpa biaya per-pesan.</p>'
+            . code_block('bash', "ollama run llama3\n# arahkan Hermes ke endpoint OpenAI-compatible: http://localhost:11434/v1")
+            . '<div class="tip">Cocok untuk privasi penuh dan tanpa rate limit.</div>'],
+    ]);
+
+    // ── 9. AI: OpenRouter (multi-model API) ──
+    insert_tutorial($pdo, [
+        'title' => 'Akses 400+ Model AI via OpenRouter',
+        'slug' => 'openrouter-multi-model-api',
+        'description' => 'Satu API key untuk menjangkau ratusan model (OpenAI, Anthropic, Google, Meta) lewat satu endpoint.',
+        'category' => 'AI', 'icon' => 'CLOUD',
+        'tags' => 'API,Multi-model,Gateway',
+    ], [
+        ['Buat API Key',
+            '<p>Daftar di <code>openrouter.ai</code>, lalu buka <code>openrouter.ai/keys</code> &rarr; "Create Key". Salin segera karena tidak ditampilkan lagi.</p>'
+            . code_block('bash', "export OPENROUTER_API_KEY=\"sk-or-...\"")],
+        ['Request Pertama',
+            '<p>Endpoint kompatibel dengan format OpenAI — cukup ganti URL & model slug:</p>'
+            . code_block('bash', "curl https://openrouter.ai/api/v1/chat/completions \\\n  -H \"Authorization: Bearer \$OPENROUTER_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"openai/gpt-4o\",\n    \"messages\": [{\"role\":\"user\",\"content\":\"Halo!\"}]\n  }'")],
+        ['Ganti Model Tanpa Ubah Kode',
+            '<p>Cukup ganti nilai <code>model</code>. Lihat katalog lengkap di <code>openrouter.ai/models</code>.</p>'
+            . code_block('text', "anthropic/claude-3.5-sonnet\ngoogle/gemini-flash-1.5\nmeta-llama/llama-3.1-70b-instruct")
+            . '<div class="warning">Harga berbeda antar model — pantau dashboard penggunaan Anda.</div>'],
+    ]);
+
+    // ── 10. AI: OpenAI API ──
+    insert_tutorial($pdo, [
+        'title' => 'Setup OpenAI API (Python & cURL)',
+        'slug' => 'setup-openai-api',
+        'description' => 'Mulai memakai model GPT lewat API resmi OpenAI: dari API key hingga request pertama.',
+        'category' => 'AI', 'icon' => 'CODE',
+        'tags' => 'OpenAI,GPT,Python,API',
+    ], [
+        ['Dapatkan API Key',
+            '<p>Buat key di <code>platform.openai.com/api-keys</code>, lalu simpan sebagai environment variable:</p>'
+            . code_block('bash', "export OPENAI_API_KEY=\"sk-...\"")],
+        ['Uji Key dengan cURL',
+            code_block('bash', "curl https://api.openai.com/v1/chat/completions \\\n  -H \"Authorization: Bearer \$OPENAI_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"gpt-4o-mini\",\n    \"messages\": [{\"role\":\"user\",\"content\":\"Halo!\"}]\n  }'")],
+        ['Pakai di Python',
+            code_block('bash', "pip install openai")
+            . code_block('python', "from openai import OpenAI\nclient = OpenAI()  # baca OPENAI_API_KEY otomatis\n\nresp = client.chat.completions.create(\n    model=\"gpt-4o-mini\",\n    messages=[{\"role\": \"user\", \"content\": \"Halo!\"}],\n)\nprint(resp.choices[0].message.content)")
+            . '<div class="tip">Jangan pernah commit API key ke Git. Gunakan file <code>.env</code> dan tambahkan ke <code>.gitignore</code>.</div>'],
+    ]);
+
+    // ── 11. AI: OpenClaw (automation agent) ──
+    insert_tutorial($pdo, [
+        'title' => 'OpenClaw — Asisten AI Otomasi via Chat',
+        'slug' => 'openclaw-automation-agent',
+        'description' => 'Agen AI open-source yang mengotomasi tugas lewat WhatsApp/Telegram/Discord dengan dukungan multi-model.',
+        'category' => 'AI', 'icon' => 'FIRE',
+        'tags' => 'Agent,Automation,Multi-channel,VPS',
+    ], [
+        ['Apa itu OpenClaw?',
+            '<p>OpenClaw adalah gateway AI yang menghubungkan model bahasa ke aplikasi pesan, jadwal berulang, dan memori persisten. Berbeda dari Claude Code (fokus coding di terminal), OpenClaw fokus pada otomasi umum lintas channel.</p>'
+            . '<div class="info-box"><div class="info-grid">'
+            . '<div><div class="label">Model</div><div class="value">BYOM (bawa API sendiri)</div></div>'
+            . '<div><div class="label">Lisensi</div><div class="value">Open Source</div></div>'
+            . '<div><div class="label">Channel</div><div class="value">WhatsApp, Telegram, Discord</div></div>'
+            . '<div><div class="label">Biaya</div><div class="value">VPS + API saja</div></div>'
+            . '</div></div>'],
+        ['Install Orchestrator',
+            '<p>Plugin orchestrator menambahkan banyak tool ke setiap agen OpenClaw:</p>'
+            . code_block('bash', "npm install -g @enderfga/claw-orchestrator")
+            . '<p>Atau via skrip install:</p>'
+            . code_block('bash', "curl -fsSL https://raw.githubusercontent.com/Enderfga/claw-orchestrator/main/install.sh | bash")],
+        ['Catatan Keamanan',
+            '<div class="warning">Karena OpenClaw bisa mengeksekusi aksi di sistem & akun pesan Anda, jalankan di user VPS terkunci (least privilege) dan batasi akses pengguna yang diizinkan.</div>'],
+    ]);
+
+    // ── 12. AI: Claude Code ──
+    insert_tutorial($pdo, [
+        'title' => 'Claude Code — Agen Coding di Terminal',
+        'slug' => 'claude-code-terminal-agent',
+        'description' => 'Agen coding dari Anthropic yang membaca repo, mengedit file, dan menjalankan perintah langsung dari terminal.',
+        'category' => 'AI', 'icon' => 'CODE',
+        'tags' => 'Coding,CLI,Anthropic',
+    ], [
+        ['Install via npm',
+            code_block('bash', "npm install -g @anthropic-ai/claude-code")
+            . '<div class="tip">Butuh Node.js 18+. Cek dengan <code>node --version</code>.</div>'],
+        ['Jalankan di Folder Proyek',
+            code_block('bash', "cd proyek-anda\nclaude")
+            . '<p>Claude Code memahami seluruh struktur repo Anda dan dapat mengedit kode, menjalankan test, serta otomasi review.</p>'],
+    ]);
 }
 
 /** Helper untuk membuat markup blok kode (dipakai saat seed). */
